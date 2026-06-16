@@ -44,5 +44,6 @@
   "advancements.sip_moment.get_david_martinez.descr": "get David Martinez",
   "advancements.sip_moment.drunk.title": "The alcohol is taking effect!",
   "advancements.sip_moment.drunk.descr": "get Drunk Effect.",
-  "jukebox_song.sip_moment.dust_to_dust": "KING_VITIONNOT - Dust To Dust"
+  "jukebox_song.sip_moment.dust_to_dust": "KING_VITIONNOT - Dust To Dust",
+  "death.attack.at_field": "%1$s Melted into LCL"
 }

@@ -44,5 +44,6 @@
   "advancements.sip_moment.get_david_martinez.descr": "获得大卫·马丁内斯",
   "advancements.sip_moment.drunk.title": "酒劲上来了！",
   "advancements.sip_moment.drunk.descr": "获得酒劲药水效果。",
-  "jukebox_song.sip_moment.dust_to_dust": "KING_VITIONNOT - Dust To Dust"
+  "jukebox_song.sip_moment.dust_to_dust": "KING_VITIONNOT - Dust To Dust",
+  "death.attack.at_field": "%1$s 融成了LCL"
 }

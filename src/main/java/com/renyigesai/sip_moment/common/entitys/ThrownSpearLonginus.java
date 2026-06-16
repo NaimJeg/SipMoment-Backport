@@ -144,6 +144,9 @@ public class ThrownSpearLonginus extends AbstractArrow {
 
         int damage = Mth.ceil(Mth.clamp(dmg, 0.0, 2.147483647E9));
 
+        System.out.println(damageSource.getLocalizedDeathMessage((LivingEntity) entity));
+
+
         if (this.getPierceLevel() > 0) {
             if (this.piercingIgnoreEntityIds == null) {
                 this.piercingIgnoreEntityIds = new IntOpenHashSet(5);
