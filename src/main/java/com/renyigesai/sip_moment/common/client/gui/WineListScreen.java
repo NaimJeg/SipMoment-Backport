@@ -26,13 +26,11 @@ public class WineListScreen extends AbstractContainerScreen<WineListMenu> {
     public final Player player;
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(SipMomentMod.MODID, "textures/gui/wine_list.png");
     private static final int[] LINE = new int[]{59,91,123,155};
-//    private final Font font;
     public WineListScreen(WineListMenu p_97741_, Inventory p_97742_, Component p_97743_) {
         super(p_97741_, p_97742_, p_97743_);
         this.player = p_97742_.player;
         this.titleLabelY += 16;
         this.titleLabelX -= (width - 139) / 2;
-//        font = Minecraft.getInstance().font;
     }
 
     @Override
@@ -92,13 +90,25 @@ public class WineListScreen extends AbstractContainerScreen<WineListMenu> {
     public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
         int x = this.leftPos;
         int y = this.topPos;
-        if (pMouseX >= x && pMouseX <= x + 104 && pMouseY >= y + 26 && pMouseY <= y + 195){
-            boolean flag = scrollY > 0;
-            int page = flag ? -1 : 1;
-            int newWineListPage = Math.max(menu.getPage() + page, 0);
-            menu.rebuildSlots(newWineListPage);
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HAT, 2.0F));
+        if (pMouseX >= x && pMouseX <= x + 104 && pMouseY >= y + 26 && pMouseY <= y + 195) {
+            int totalItems = WineListCatalog.getWineList().size();
+            int itemsPerPage = menu.itemsPerPage;
+            int totalPages = Math.max(1, (totalItems + itemsPerPage - 1) / itemsPerPage);
+
+            int currentPage = menu.getPage();
+            int newPage;
+            if (scrollY > 0) {
+                newPage = Math.max(currentPage - 1, 0);
+            } else {
+                newPage = Math.min(currentPage + 1, totalPages - 1);
+            }
+
+            if (newPage != currentPage) {
+                menu.rebuildSlots(newPage);
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HAT, 2.0F));
+            }
+
         }
-        return super.mouseScrolled(x, y, scrollX, scrollY);
+        return super.mouseScrolled(pMouseX, pMouseY, scrollX, scrollY);
     }
 }

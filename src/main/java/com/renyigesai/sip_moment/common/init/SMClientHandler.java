@@ -65,11 +65,13 @@ public class SMClientHandler {
         LocalPlayer player = instance.player;
         if (player != null) {
             int capacity_for_liquor = player.getData(SMAttachments.CAPACITY_FOR_LIQUOR);
-            if (player.hasEffect(SMMobEffects.DRUNK) && player.getEffect(SMMobEffects.DRUNK).getAmplifier() >= capacity_for_liquor){
+            if (player.hasEffect(SMMobEffects.DRUNK) && player.getEffect(SMMobEffects.DRUNK).getAmplifier() >= capacity_for_liquor) {
                 float time = (player.tickCount + instance.getDeltaTracker().getGameTimeDeltaPartialTick(false)) / 20f;
                 int amplifier = player.getEffect(SMMobEffects.DRUNK).getAmplifier();
                 float period = amplifier == capacity_for_liquor ? 5f : 15f;
-                float maxAngle = amplifier == capacity_for_liquor ? 45f : 180f;
+                float baseMaxAngle = amplifier == capacity_for_liquor ? 45f : 180f;
+                float effectScale = instance.options.screenEffectScale().get().floatValue();//根据屏幕扭曲效果控制摆动幅度
+                float maxAngle = (float) (baseMaxAngle * effectScale);
                 float rollAngle = maxAngle * (float) Math.sin(2.0 * Math.PI * time / period);
                 event.setRoll(rollAngle);
             }

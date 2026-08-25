@@ -11,13 +11,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -38,34 +43,6 @@ public class BottledWineItem extends PileItem{
         this.color = color;
         this.initY = initY;
         this.maxEatCount = maxEatCount;
-    }
-
-    @Override
-    public @NotNull InteractionResult useOn(UseOnContext pContext) {
-        BlockPos clickedPos = pContext.getClickedPos();
-        Level level = pContext.getLevel();
-        BlockState blockState = level.getBlockState(clickedPos);
-        if (blockState.getBlock() instanceof CupBlock cupBlock && getCupStack().getItem() instanceof BlockItem blockItem){
-            if (blockItem.getBlock() == cupBlock){
-                if (level instanceof ServerLevel serverLevel){
-                    PouringWineEntity pouringWineEntity = new PouringWineEntity(SMEntityTypes.POURING_WINE.get(), level);
-                    pouringWineEntity.setWineStack(createNewWine(pContext.getItemInHand()));
-                    pouringWineEntity.setWineColor(color);
-                    pouringWineEntity.setCupPos(clickedPos);
-                    pouringWineEntity.setInitY(initY);
-                    pouringWineEntity.setPos(clickedPos.getX() + 0.5,clickedPos.getY() + 0.5,clickedPos.getZ() + 0.5);
-                    pouringWineEntity.setOwner(pContext.getPlayer());
-                    float yRot = blockState.getValue(CupBlock.FACING).toYRot();
-                    pouringWineEntity.setYRot(yRot);
-                    pouringWineEntity.yRotO = yRot;
-                    serverLevel.addFreshEntity(pouringWineEntity);
-                    serverLevel.playSound(null,clickedPos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS);
-                    pContext.getItemInHand().shrink(1);
-                }
-                return InteractionResult.SUCCESS;
-            }
-        }
-        return super.useOn(pContext);
     }
 
     public ItemStack getCupStack() {
