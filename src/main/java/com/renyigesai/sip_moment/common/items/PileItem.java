@@ -18,7 +18,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.TooltipDisplay;
+
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -56,9 +56,8 @@ public class PileItem extends BlockItem {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        player.startUsingItem(hand);
-        return InteractionResult.SUCCESS;
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return net.minecraft.world.item.ItemUtils.startUsingInstantly(level, player, hand);
     }
 
     @Override
@@ -106,7 +105,7 @@ public class PileItem extends BlockItem {
     }
 
     @Override
-    public int getEnchantmentLevel(ItemInstance stack, Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -177,11 +176,11 @@ public class PileItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, display, builder, tooltipFlag);
-        builder.accept(Component.translatable("tooltips.sip_moment.pile_item_place").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
-        if (itemStack.has(DataComponents.FOOD) && itemStack.has(DataComponents.CONSUMABLE)){
-            TextUtils.addFoodEffectTooltip(itemStack, builder, 1.0F,context.tickRate());
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, java.util.List<Component> builder, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, builder, tooltipFlag);
+        builder.add(Component.translatable("tooltips.sip_moment.pile_item_place").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+        if (itemStack.has(DataComponents.FOOD) && itemStack.has(DataComponents.FOOD)){
+            TextUtils.addFoodEffectTooltip(itemStack, builder::add, 1.0F,context.tickRate());
         }
     }
 

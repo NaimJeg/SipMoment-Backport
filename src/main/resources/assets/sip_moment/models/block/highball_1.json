@@ -5,7 +5,8 @@
 		"0": "sip_moment:block/highball",
 		"particle": "sip_moment:block/highball"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [5.5, 0, 5.5],
 			"to": [9.5, 1, 9.5],

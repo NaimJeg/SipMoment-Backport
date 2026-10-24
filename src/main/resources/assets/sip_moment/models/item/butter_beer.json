@@ -1,6 +1,26 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "sip_moment:item/butter_beer"
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "sip_moment:block/butter_beer_1"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/butter_beer"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/butter_beer"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/butter_beer"
+      }
+    }
   }
 }

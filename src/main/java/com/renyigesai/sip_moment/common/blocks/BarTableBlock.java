@@ -7,10 +7,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -34,8 +34,8 @@ public class BarTableBlock extends HorizontalDirectionalBlock {
     public static final VoxelShape BOX_DOWN;
     public static final VoxelShape BOX;
 
-    public BarTableBlock(Identifier identifier) {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).setId(ResourceKey.create(Registries.BLOCK,identifier)));
+    public BarTableBlock(ResourceLocation identifier) {
+        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS));
     }
 
     public BarTableBlock(Properties properties) {
@@ -53,11 +53,21 @@ public class BarTableBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        player.setData(SMAttachments.WINE_LIST_PAGE,0);
-        player.openMenu(getMenuProvider());
-        player.startUsingItem(hand);
-        return InteractionResult.SUCCESS;
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            player.setData(SMAttachments.WINE_LIST_PAGE, 0);
+            player.openMenu(getMenuProvider());
+        }
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            player.setData(SMAttachments.WINE_LIST_PAGE, 0);
+            player.openMenu(getMenuProvider());
+        }
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     public MenuProvider getMenuProvider() {

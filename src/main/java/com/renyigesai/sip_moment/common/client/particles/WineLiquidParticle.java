@@ -1,7 +1,7 @@
 package com.renyigesai.sip_moment.common.client.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -9,7 +9,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.joml.Vector3f;
 
-public class WineLiquidParticle extends SingleQuadParticle {
+public class WineLiquidParticle extends TextureSheetParticle {
 
 //    public WineLiquidParticle(ClientLevel level, double x, double y, double z, WineLiquidParticleOptions options,TextureAtlasSprite sprite,SpriteSet spriteSet) {
 //        super(level, x, y, z, sprite);
@@ -27,7 +27,7 @@ public class WineLiquidParticle extends SingleQuadParticle {
     private final SpriteSet sprites;
 
     public WineLiquidParticle(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, WineLiquidParticleOptions options, SpriteSet sprites) {
-        super(level, x, y, z, dx, dy, dz, sprites.first());
+        super(level, x, y, z, dx, dy, dz);
         this.sprites = sprites;
         this.gravity = 0.06F;
         this.setSize(0.01f,0.01f);
@@ -68,7 +68,7 @@ public class WineLiquidParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected Layer getLayer() {
-        return Layer.OPAQUE;
+    public net.minecraft.client.particle.ParticleRenderType getRenderType() {
+        return net.minecraft.client.particle.ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 }

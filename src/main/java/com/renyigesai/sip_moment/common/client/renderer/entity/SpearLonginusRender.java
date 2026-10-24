@@ -5,58 +5,36 @@ import com.mojang.math.Axis;
 import com.renyigesai.sip_moment.SipMomentMod;
 import com.renyigesai.sip_moment.common.client.model.SpearLonginusModel;
 import com.renyigesai.sip_moment.common.entitys.ThrownSpearLonginus;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
-import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Unit;
+import net.minecraft.resources.ResourceLocation;
 
-public class SpearLonginusRender extends EntityRenderer<ThrownSpearLonginus, ThrownTridentRenderState> {
-    public static final Identifier TRIDENT_LOCATION = Identifier.fromNamespaceAndPath(SipMomentMod.MODID,"textures/entity/spear_longinus.png");
+public class SpearLonginusRender extends EntityRenderer<ThrownSpearLonginus> {
+    public static final ResourceLocation TRIDENT_LOCATION = ResourceLocation.fromNamespaceAndPath(SipMomentMod.MODID, "textures/entity/spear_longinus.png");
     private final SpearLonginusModel model;
+
     public SpearLonginusRender(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new SpearLonginusModel(context.bakeLayer(SpearLonginusModel.LAYER_LOCATION));
+        model = new SpearLonginusModel(context.bakeLayer(SpearLonginusModel.LAYER_LOCATION));
     }
 
     @Override
-    public ThrownTridentRenderState createRenderState() {
-        return new ThrownTridentRenderState();
+    public ResourceLocation getTextureLocation(ThrownSpearLonginus entity) {
+        return TRIDENT_LOCATION;
     }
 
-    public void extractRenderState(ThrownSpearLonginus entity, ThrownTridentRenderState state, float partialTicks) {
-        super.extractRenderState(entity, state, partialTicks);
-        state.yRot = entity.getYRot(partialTicks);
-        state.xRot = entity.getXRot(partialTicks);
-        state.isFoil = entity.isFoil();
-    }
-
-    public void submit(ThrownTridentRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot + 90.0F));
-        poseStack.scale(2,2,2);
-        submitNodeCollector.order(0)
-                .submitModel(this.model, Unit.INSTANCE, poseStack, TRIDENT_LOCATION, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
-        if (state.isFoil) {
-            submitNodeCollector.order(1)
-                    .submitModel(
-                            this.model,
-                            Unit.INSTANCE,
-                            poseStack,
-                            ItemFeatureRenderer.getFoilRenderType(this.model.renderType(TRIDENT_LOCATION), false),
-                            state.lightCoords,
-                            OverlayTexture.NO_OVERLAY,
-                            state.outlineColor,
-                            null
-                    );
-        }
-
-        poseStack.popPose();
-        super.submit(state, poseStack, submitNodeCollector, camera);
+    @Override
+    public void render(ThrownSpearLonginus entity, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffers, int light) {
+        poses.pushPose();
+        poses.mulPose(Axis.YP.rotationDegrees(net.minecraft.util.Mth.lerp(partialTick, entity.yRotO, entity.getYRot()) - 90));
+        poses.mulPose(Axis.ZP.rotationDegrees(net.minecraft.util.Mth.lerp(partialTick, entity.xRotO, entity.getXRot()) + 90));
+        poses.scale(2, 2, 2);
+        var vertices = ItemRenderer.getFoilBufferDirect(buffers, model.renderType(TRIDENT_LOCATION), false, entity.isFoil());
+        model.renderToBuffer(poses, vertices, light, OverlayTexture.NO_OVERLAY, -1);
+        poses.popPose();
+        super.render(entity, yaw, partialTick, poses, buffers, light);
     }
 }

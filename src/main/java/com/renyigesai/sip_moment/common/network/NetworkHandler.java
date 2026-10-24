@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@EventBusSubscriber(modid = SipMomentMod.MODID)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = SipMomentMod.MODID)
 public class NetworkHandler {
 
     @SubscribeEvent

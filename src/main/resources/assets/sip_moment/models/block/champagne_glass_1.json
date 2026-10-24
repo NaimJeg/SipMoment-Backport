@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "sip_moment:block/champagne_glass",
-		"particle": "champagne_glass"
+		"particle": "sip_moment:block/champagne_glass"
 	},
 	"elements": [
 		{

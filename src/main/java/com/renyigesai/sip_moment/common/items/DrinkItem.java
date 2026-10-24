@@ -9,9 +9,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
+
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -50,8 +50,8 @@ public class DrinkItem extends PileItem{
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack pStack) {
-        return ItemUseAnimation.DRINK;
+    public UseAnim getUseAnimation(ItemStack pStack) {
+        return UseAnim.DRINK;
     }
 
     public static boolean isRepeatEat(ItemStack stack){
@@ -63,6 +63,17 @@ public class DrinkItem extends PileItem{
         return 5592575;
     }
 
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living) {
+        // Let vanilla apply food effects and statistics to a copy; only consume one sip.
+        super.finishUsingItem(stack.copy(), level, living);
+        return onConsume(level, living, stack);
+    }
+
+    @Override
+    public net.minecraft.sounds.SoundEvent getEatingSound() {
+        return net.minecraft.sounds.SoundEvents.GENERIC_DRINK;
+    }
     public ItemStack onConsume(Level level, LivingEntity living, ItemStack stack){
         if (isRepeatEat(stack)){
             int eatCount = stack.getOrDefault(SMDataComponents.EAT_COUNT,-1);
@@ -74,7 +85,7 @@ public class DrinkItem extends PileItem{
             }else {
                 stack.set(SMDataComponents.EAT_COUNT,eatCount - 1);
             }
-            return (eatCount - 1 == 0 && cache.getCraftingRemainder() != null) ? cache.getCraftingRemainder().create() : stack;
+            return (eatCount - 1 == 0 && !cache.getCraftingRemainingItem().isEmpty()) ? cache.getCraftingRemainingItem() : stack;
         }
         return stack;
     }
@@ -108,20 +119,20 @@ public class DrinkItem extends PileItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, display, builder, tooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> builder, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, builder, tooltipFlag);
         if (this.canWine){
-            builder.accept(Component.translatable("effect.sip_moment.drunk").append(" (00:30)").withStyle(ChatFormatting.RED));
+            builder.add(Component.translatable("effect.sip_moment.drunk").append(" (00:30)").withStyle(ChatFormatting.RED));
         }
         if (isRepeatEat(stack)) {
             int eatCount = stack.getOrDefault(SMDataComponents.EAT_COUNT, -1);
             int eatCountMax = stack.getOrDefault(SMDataComponents.EAT_COUNT_MAX, -1);
             String translatable = "tooltips.sip_moment.repeat_eat_item_drink";
-            builder.accept(Component.literal(Component.translatable(translatable).getString() + eatCount + " / " + eatCountMax));
+            builder.add(Component.literal(Component.translatable(translatable).getString() + eatCount + " / " + eatCountMax));
         }
         if (this.customField) {
-            builder.accept(Component.empty());
-            builder.accept(Component.translatable("tooltip." + this.toString()).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+            builder.add(Component.empty());
+            builder.add(Component.translatable("tooltip." + this.toString()).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
         }
     }
 }

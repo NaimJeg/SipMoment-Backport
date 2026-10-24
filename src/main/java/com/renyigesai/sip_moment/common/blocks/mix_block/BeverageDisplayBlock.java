@@ -6,7 +6,7 @@ import com.renyigesai.sip_moment.common.utils.ItemUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -14,7 +14,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -40,8 +40,8 @@ public class BeverageDisplayBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty TRAY = BooleanProperty.create("tray");
 
-    public BeverageDisplayBlock(Identifier id) {
-        super(Properties.of().strength(0.5F,0.5F).sound(SoundType.GLASS).noOcclusion().isRedstoneConductor((bs, br, bp) -> false).setId(ResourceKey.create(Registries.BLOCK,id)));
+    public BeverageDisplayBlock(ResourceLocation id) {
+        super(Properties.of().strength(0.5F,0.5F).sound(SoundType.GLASS).noOcclusion().isRedstoneConductor((bs, br, bp) -> false));
         this.registerDefaultState(this.stateDefinition.any().setValue(TRAY,false).setValue(FACING, Direction.NORTH));
     }
 
@@ -74,8 +74,8 @@ public class BeverageDisplayBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction facing, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
-        return facing == Direction.DOWN && !state.canSurvive(level, neighbourPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, ticks, pos, facing, neighbourPos, neighbourState, random);
+    protected BlockState updateShape(BlockState state, Direction facing, BlockState neighbourState, LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+        return facing == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, facing, neighbourState, level, pos, neighbourPos);
     }
 
     @Override
@@ -93,31 +93,38 @@ public class BeverageDisplayBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide()){
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         if (!player.isShiftKeyDown()){
 //            ItemStack itemInHand = player.getItemInHand(hand);
 //            if (itemInHand.is(BakeriesItems.WOOD_TRAY)){
 //                level.setBlock(pos,state.setValue(TRAY,true),3);
-//                return InteractionResult.SUCCESS;
+//                return ItemInteractionResult.SUCCESS;
 //            }
             return take(level, pos, player);
         }
         return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
     }
 
-    public InteractionResult take(Level pLevel, BlockPos pPos, Player pPlayer){
+    @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (player.isShiftKeyDown()) return net.minecraft.world.InteractionResult.PASS;
+        if (!level.isClientSide()) take(level, pos, player);
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide());
+    }
+    public ItemInteractionResult take(Level pLevel, BlockPos pPos, Player pPlayer){
         BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
         BeverageDisplayBlockEntity mix;
         if (!(blockEntity instanceof BeverageDisplayBlockEntity)){
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
         mix = (BeverageDisplayBlockEntity) blockEntity;
         net.neoforged.neoforge.items.ItemStackHandler inventory = mix.getInventory();
         ItemStack outStack;
         int inventoryCount = mix.getInventoryCount();
+        if (inventoryCount == 0) return ItemInteractionResult.FAIL;
         ItemStack stackInSlot = inventory.getStackInSlot(inventoryCount - 1);
         outStack = stackInSlot.copy();
         inventory.setStackInSlot(inventoryCount - 1,ItemStack.EMPTY);
@@ -133,16 +140,24 @@ public class BeverageDisplayBlock extends BaseEntityBlock {
         }
         ItemUtils.givePlayerItem(pPlayer,outStack);
         pLevel.playSound(null,pPos,soundEvent, SoundSource.BLOCKS);
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BeverageDisplayBlockEntity mix){
             return new ItemStack(mix.getInventory().getStackInSlot(0).getItem());
         }
-        return super.getCloneItemStack(level, pos, state, includeData, player);
+        return super.getCloneItemStack(level, pos, state);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState replacement, boolean moving) {
+        if (!state.is(replacement.getBlock()) && level.getBlockEntity(pos) instanceof BeverageDisplayBlockEntity display) {
+            net.minecraft.world.Containers.dropContents(level, pos, display.getItems());
+        }
+        super.onRemove(state, level, pos, replacement, moving);
     }
 
     @Nullable

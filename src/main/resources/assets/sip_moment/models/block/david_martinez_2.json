@@ -3,7 +3,8 @@
 		"0": "sip_moment:block/david_martinez",
 		"particle": "sip_moment:block/david_martinez"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [9.26904, 4.95723, 7],
 			"to": [11.26904, 7.95723, 9],

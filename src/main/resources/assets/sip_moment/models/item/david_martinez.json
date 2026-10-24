@@ -1,6 +1,26 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "sip_moment:item/david_martinez"
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "sip_moment:block/david_martinez_1"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/david_martinez"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/david_martinez"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/david_martinez"
+      }
+    }
   }
 }

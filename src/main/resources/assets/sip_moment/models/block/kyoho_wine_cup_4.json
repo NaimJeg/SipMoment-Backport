@@ -3,7 +3,8 @@
 		"0": "sip_moment:block/kyoho_wine_cup",
 		"particle": "sip_moment:block/kyoho_wine_cup"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"name": "cube_outline",
 			"from": [12.6, 10.35, 12.6],

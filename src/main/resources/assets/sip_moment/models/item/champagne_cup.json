@@ -1,6 +1,26 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "sip_moment:item/champagne_cup"
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "sip_moment:block/champagne_cup_1"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/champagne_cup"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/champagne_cup"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/champagne_cup"
+      }
+    }
   }
 }

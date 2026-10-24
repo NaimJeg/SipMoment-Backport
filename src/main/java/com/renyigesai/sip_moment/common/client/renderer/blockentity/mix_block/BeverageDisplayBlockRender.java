@@ -2,28 +2,43 @@ package com.renyigesai.sip_moment.common.client.renderer.blockentity.mix_block;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.renyigesai.sip_moment.common.blocks.mix_block.BeverageDisplayBlock;
 import com.renyigesai.sip_moment.common.blocks.mix_block.BeverageDisplayBlockEntity;
-import com.renyigesai.sip_moment.common.client.renderer.blockentity.BlockEntityItemRenderer;
-import com.renyigesai.sip_moment.common.utils.ItemUtils;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
-public class BeverageDisplayBlockRender extends BlockEntityItemRenderer<BeverageDisplayBlockEntity, BeverageDisplayRenderState> {
+public class BeverageDisplayBlockRender implements BlockEntityRenderer<BeverageDisplayBlockEntity> {
+    private final BlockRenderDispatcher blocks;
 
+    public BeverageDisplayBlockRender(BlockEntityRendererProvider.Context context) {
+        blocks = context.getBlockRenderDispatcher();
+    }
+
+    @Override
+    public void render(BeverageDisplayBlockEntity entity, float partialTick, PoseStack poses, MultiBufferSource buffers, int light, int overlay) {
+        int count = entity.getInventoryCount();
+        if (count == 0) return;
+        Direction facing = entity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
+        int index = 0;
+        for (int slot = 0; slot < entity.getInventory().getSlots(); slot++) {
+            var stack = entity.getInventory().getStackInSlot(slot);
+            if (stack.isEmpty()) continue;
+            Vec2 position = transformPositionByDirection(VEC2S[count][index++], facing);
+            if (stack.getItem() instanceof BlockItem item) {
+                poses.pushPose();
+                poses.translate(position.x, 0, position.y);
+                poses.mulPose(Axis.YP.rotationDegrees(-facing.toYRot() + 15));
+                poses.translate(-0.5, 0, -0.5);
+                blocks.renderSingleBlock(item.getBlock().defaultBlockState(), poses, buffers, light, overlay);
+                poses.popPose();
+            }
+        }
+    }
     public static final float ADD_SIZE = 0.25f;
     public static final Vec2[][] VEC2S = {
             new Vec2[]{},
@@ -32,62 +47,6 @@ public class BeverageDisplayBlockRender extends BlockEntityItemRenderer<Beverage
             new Vec2[]{new Vec2(0.5f + ADD_SIZE, 0.5f + ADD_SIZE), new Vec2(0.5f - ADD_SIZE, 0.5f + ADD_SIZE), new Vec2(0.5f, 0.5f - ADD_SIZE)},
             new Vec2[]{new Vec2(0.5f + ADD_SIZE, 0.5f + ADD_SIZE), new Vec2(0.5f - ADD_SIZE, 0.5f + ADD_SIZE), new Vec2(0.5f + ADD_SIZE, 0.5f - ADD_SIZE), new Vec2(0.5f - ADD_SIZE, 0.5f - ADD_SIZE)}
     };
-
-    public BeverageDisplayBlockRender(BlockEntityRendererProvider.Context context) {
-        super(context);
-    }
-
-    @Override
-    public NonNullList<ItemStack> items(BeverageDisplayBlockEntity blockEntity) {
-        return ItemUtils.toNonNullList(blockEntity.getInventory());
-    }
-
-    @Override
-    public void extract(BeverageDisplayBlockEntity blockEntity, @NotNull BeverageDisplayRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
-        state.facing = blockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
-        state.tray = blockEntity.getBlockState().getValue(BeverageDisplayBlock.TRAY);
-    }
-
-    @Override
-    public Level level(BeverageDisplayBlockEntity blockEntity) {
-        return blockEntity.level();
-    }
-
-    @Override
-    public void render(ItemStackRenderState[] itemStackRenderStates, BlockModelRenderState[] blockModelRenderStates, BeverageDisplayRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        if (!(state.getInventoryCount() >= 1)){
-            return;
-        }
-        for (int slot = 0; slot < blockModelRenderStates.length; ++slot) {
-            BlockModelRenderState blockModelRenderState = blockModelRenderStates[slot];
-            if (blockModelRenderState != null){
-                Direction facing = state.facing;
-                float rotation = -facing.toYRot();
-                Vec2 pos2d = transformPositionByDirection(VEC2S[state.getInventoryCount()][slot],facing);
-                // ������Ʒ�������еľ������꣨���߶ȣ�
-                Vec3 worldPos = transitionVec3(pos2d);
-                poseStack.pushPose();
-                // 1. ƽ�Ƶ���Ʒ������λ��
-                poseStack.translate(worldPos.x, 0.5, worldPos.z);
-                // 2. ��Ʒ�������ת��15��΢�� + ������ת��
-                poseStack.mulPose(Axis.YP.rotationDegrees(rotation + 15));
-                // 3. ����
-                float size = 1.0f;
-                poseStack.scale(size, size, size);
-                // 4. ����ģ��ê�㣺ʹģ�����Ķ��뵱ǰԭ��
-                poseStack.translate(-0.5, -0.5, -0.5);
-                // 5. �ύ
-                blockModelRenderState.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
-                poseStack.popPose();
-            }
-        }
-    }
-
-    @Override
-    public BeverageDisplayRenderState createRenderState() {
-        return new BeverageDisplayRenderState(4);
-    }
-
     private Vec2 transformPositionByDirection(Vec2 position, Direction direction) {
         float x = position.x;
         float y = position.y;

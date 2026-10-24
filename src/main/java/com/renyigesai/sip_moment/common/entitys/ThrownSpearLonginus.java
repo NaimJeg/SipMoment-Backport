@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,17 +21,17 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileDeflection;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,7 +68,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
         if (this.inGroundTime > 4) {
             this.dealtDamage = true;
         }
-        if (!this.isInGround()){
+        if (!this.inGround){
             this.flyingTime ++;
         }
 
@@ -77,7 +77,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
         if (loyalty > 0 && (this.dealtDamage || this.isNoPhysics()) && currentOwner != null) {
             if (!this.isAcceptibleReturnOwner()) {
                 if (this.level() instanceof ServerLevel level && this.pickup == AbstractArrow.Pickup.ALLOWED) {
-                    this.spawnAtLocation(level, this.getPickupItem(), 0.1F);
+                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
                 }
 
                 this.discard();
@@ -119,11 +119,6 @@ public class ThrownSpearLonginus extends AbstractArrow {
         return this.dealtDamage ? null : super.findHitEntity(from, to);
     }
 
-    @Override
-    protected Collection<EntityHitResult> findHitEntities(Vec3 from, Vec3 to) {
-        EntityHitResult e = this.findHitEntity(from, to);
-        return e != null ? List.of(e) : List.of();
-    }
 
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
@@ -133,7 +128,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
         Entity currentOwner = this.getOwner();
         DamageSource damageSource = this.damageSources().source(
                 ResourceKey.create(Registries.DAMAGE_TYPE,
-                        Identifier.fromNamespaceAndPath(SipMomentMod.MODID, "at_field")),
+                        ResourceLocation.fromNamespaceAndPath(SipMomentMod.MODID, "at_field")),
                 this,
                 currentOwner == null ? this : currentOwner
         );
@@ -144,7 +139,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
 
         int damage = Mth.ceil(Mth.clamp(dmg, 0.0, 2.147483647E9));
 
-        System.out.println(damageSource.getLocalizedDeathMessage((LivingEntity) entity));
+
 
 
         if (this.getPierceLevel() > 0) {
@@ -162,7 +157,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
         }
 
         this.dealtDamage = true;
-        if (entity.hurtOrSimulate(damageSource, damage)) {
+        if (entity.hurt(damageSource, damage)) {
             if (entity instanceof LivingEntity mob) {
                 if (!this.level().isClientSide() && this.getPierceLevel() <= 0) {
                     mob.setArrowCount(mob.getArrowCount() + 1);
@@ -171,22 +166,19 @@ public class ThrownSpearLonginus extends AbstractArrow {
                 this.doPostHurtEffects(mob);
             }
 
-            if (!entity.isAlive() && this.piercedAndKilledEntities != null) {
-                this.piercedAndKilledEntities.add((LivingEntity) entity);
+            if (entity instanceof LivingEntity killed && !killed.isAlive() && this.piercedAndKilledEntities != null) {
+                this.piercedAndKilledEntities.add(killed);
             }
 
             if (this.level() instanceof ServerLevel serverLevel) {
-                EnchantmentHelper.doPostAttackEffectsWithItemSourceOnBreak(
-                        serverLevel, entity, damageSource, this.getWeaponItem(),
-                        weapon -> this.kill(serverLevel)
-                );
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, entity, damageSource, this.getWeaponItem());
             }
 
             if (this.getPierceLevel() <= 0) {
                 this.discard();
             }
         } else {
-            this.deflect(ProjectileDeflection.REVERSE, entity, this.owner, false);
+            this.deflect(ProjectileDeflection.REVERSE, entity, this.getOwner(), false);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.02, 0.2, 0.02));
         }
 
@@ -204,7 +196,7 @@ public class ThrownSpearLonginus extends AbstractArrow {
                 null,
                 compensatedHitPosition,
                 level.getBlockState(hitResult.getBlockPos()),
-                item -> this.kill(level)
+                item -> this.kill()
         );
     }
 
@@ -236,14 +228,14 @@ public class ThrownSpearLonginus extends AbstractArrow {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.dealtDamage = input.getBooleanOr("DealtDamage", false);
+        this.dealtDamage = input.getBoolean("DealtDamage");
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(this.getPickupItemStackOrigin()));
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("DealtDamage", this.dealtDamage);
     }

@@ -1,6 +1,26 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "sip_moment:item/whisky"
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "sip_moment:block/whisky_1"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/whisky"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/whisky"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "sip_moment:item/whisky"
+      }
+    }
   }
 }

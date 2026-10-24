@@ -14,14 +14,14 @@ public class SMAttachments {
 
     public static final Supplier<AttachmentType<Integer>> CAPACITY_FOR_LIQUOR = ATTACHMENT_TYPES.register(
             "capacity_for_liquor", () -> AttachmentType.builder(() -> -1)
-                    .serialize(Codec.INT.fieldOf("capacity_for_liquor"))
+                    .serialize(Codec.INT)
                     .sync(ByteBufCodecs.VAR_INT)
                     .build()
     );
 
     public static final Supplier<AttachmentType<Integer>> WINE_LIST_PAGE = ATTACHMENT_TYPES.register(
             "wine_list_page", () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT.fieldOf("wine_list_page"))
+                    .serialize(Codec.INT)
                     .sync(ByteBufCodecs.VAR_INT)
                     .build()
     );

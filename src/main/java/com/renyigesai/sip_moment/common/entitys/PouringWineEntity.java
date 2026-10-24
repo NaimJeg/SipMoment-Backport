@@ -8,15 +8,8 @@ import com.renyigesai.sip_moment.common.init.SMSounds;
 import com.renyigesai.sip_moment.common.items.BottledWineItem;
 import com.renyigesai.sip_moment.common.utils.ItemUtils;
 import it.unimi.dsi.fastutil.HashCommon;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockModelRenderState;
-import net.minecraft.client.renderer.block.BlockModelResolver;
-import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,11 +29,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.UUID;
@@ -141,20 +134,30 @@ public class PouringWineEntity extends Entity implements IEntityWithComplexSpawn
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        String owner = input.getStringOr("Owner", "");
-        this.entityData.set(DATA_OWNERUUID_ID,owner);
+    protected void readAdditionalSaveData(CompoundTag input) {
+        String owner = input.getString("Owner");
+        this.entityData.set(DATA_OWNERUUID_ID, owner);
+        setWineStack(ItemStack.parseOptional(registryAccess(), input.getCompound("Wine")));
+        setCupPos(BlockPos.of(input.getLong("CupPos")));
+        setInitY(input.getFloat("InitY"));
+        time = input.getInt("PourTime");
+        wineColor = input.getInt("WineColor");
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         String ownerUUID = getOwnerUUID();
-        output.putString("Owner",ownerUUID);
+        output.putString("Owner", ownerUUID);
+        if (!getWineStack().isEmpty()) output.put("Wine", getWineStack().save(registryAccess()));
+        output.putLong("CupPos", getCupPos().asLong());
+        output.putFloat("InitY", getInitY());
+        output.putInt("PourTime", time);
+        output.putInt("WineColor", wineColor);
     }
 
     public void setWineStack(ItemStack wineStack) {
@@ -190,7 +193,7 @@ public class PouringWineEntity extends Entity implements IEntityWithComplexSpawn
     }
 
     public void setOwner(@Nullable LivingEntity owner) {
-        if (owner.getUUID() != null){
+        if (owner != null){
             this.entityData.set(DATA_OWNERUUID_ID, owner.getUUID().toString());
         }
     }
@@ -208,8 +211,9 @@ public class PouringWineEntity extends Entity implements IEntityWithComplexSpawn
 
     public LivingEntity getOwner(){
         String string = this.entityData.get(DATA_OWNERUUID_ID);
+        if (string.isEmpty()) return null;
         UUID uuid = UUID.fromString(string);
-        Entity entity = level().getEntity(uuid);
+        Entity entity = level() instanceof ServerLevel serverLevel ? serverLevel.getEntity(uuid) : level().getPlayerByUUID(uuid);
         if (entity instanceof LivingEntity){
             return (LivingEntity) entity;
         }
@@ -220,56 +224,35 @@ public class PouringWineEntity extends Entity implements IEntityWithComplexSpawn
        return this.entityData.get(DATA_OWNERUUID_ID);
     }
 
-    public static class PouringWineRender extends EntityRenderer<PouringWineEntity,PouringWineRenderState> {
-        public final ItemModelResolver itemModelResolver;
-        public final BlockModelResolver blockModelResolver;
-        public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
+    public static class PouringWineRender extends EntityRenderer<PouringWineEntity> {
+        private final net.minecraft.client.renderer.block.BlockRenderDispatcher blocks;
 
         public PouringWineRender(EntityRendererProvider.Context context) {
             super(context);
-            this.itemModelResolver = context.getItemModelResolver();
-            this.blockModelResolver = context.getBlockModelResolver();
+            blocks = context.getBlockRenderDispatcher();
         }
 
         @Override
-        public PouringWineRenderState createRenderState() {
-            return new PouringWineRenderState();
+        public net.minecraft.resources.ResourceLocation getTextureLocation(PouringWineEntity entity) {
+            return net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS;
         }
 
         @Override
-        public void extractRenderState(PouringWineEntity entity, PouringWineRenderState state, float partialTicks) {
-            super.extractRenderState(entity, state, partialTicks);
+        public void render(PouringWineEntity entity, float yaw, float partialTick, PoseStack poses,
+                           net.minecraft.client.renderer.MultiBufferSource buffers, int light) {
+            PouringWineRenderState state = new PouringWineRenderState();
             state.wineStack = entity.getWineStack();
-            state.partialTicks = partialTicks;
-            state.level = entity.level();
-            BlockState blockState = entity.level().getBlockState(entity.getCupPos());
-            if (blockState.hasProperty(CupBlock.FACING)){
-                state.direction = blockState.getValue(CupBlock.FACING).getOpposite();
-            }
             state.initY = entity.getInitY();
-            state.ageInTicks = (entity.tickCount + partialTicks) / 20f;
-            state.seed = HashCommon.long2int(entity.getOnPos().asLong());
-        }
-
-        @Override
-        public void submit(PouringWineRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-            animation(state, poseStack, submitNodeCollector, camera);
-        }
-
-        private void animation(PouringWineRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera){
-            if (!state.wineStack.isEmpty() && state.wineStack.getItem() instanceof BlockItem){
-                if (state.ageInTicks > 3.0f) return;
-                poseStack.pushPose();
-                applyPouringAnimation(state,poseStack);
-                BlockModelRenderState block = new BlockModelRenderState();
-                this.blockModelResolver.update(block, ((BlockItem)state.wineStack.getItem()).getBlock().defaultBlockState(),BLOCK_DISPLAY_CONTEXT);
-                if (!block.isEmpty()){
-                    block.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
-                }
-                poseStack.popPose();
+            state.ageInTicks = (entity.tickCount + partialTick) / 20F;
+            BlockState cup = entity.level().getBlockState(entity.getCupPos());
+            if (cup.hasProperty(CupBlock.FACING)) state.direction = cup.getValue(CupBlock.FACING).getOpposite();
+            if (state.ageInTicks <= 3 && state.wineStack.getItem() instanceof BlockItem item) {
+                poses.pushPose();
+                applyPouringAnimation(state, poses);
+                blocks.renderSingleBlock(item.getBlock().defaultBlockState(), poses, buffers, light, OverlayTexture.NO_OVERLAY);
+                poses.popPose();
             }
         }
-
         private void applyPouringAnimation(PouringWineRenderState state, PoseStack poseStack) {
             float totalTime = state.ageInTicks;   // 实体存在时间（秒）
             float duration = 3.0f;                // 总动画时长
@@ -327,7 +310,7 @@ public class PouringWineEntity extends Entity implements IEntityWithComplexSpawn
 
     }
 
-    public static class PouringWineRenderState extends EntityRenderState{
+    public static class PouringWineRenderState{
         protected ItemStack wineStack;
         protected float partialTicks;
         protected Level level;

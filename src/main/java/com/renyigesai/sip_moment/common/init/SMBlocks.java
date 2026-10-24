@@ -9,7 +9,7 @@ import com.renyigesai.sip_moment.common.blocks.mix_block.BeverageDisplayBlockEnt
 import com.renyigesai.sip_moment.common.blocks.sofa.BarChairBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -62,25 +62,25 @@ public class SMBlocks {
 
         ORANGE_JUICE = wineBlock("orange_juice",2);
 
-        GOBLET = BLOCKS.register("goblet",()-> new CupBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).setId(modBlockId("goblet")),4));
+        GOBLET = BLOCKS.register("goblet",()-> new CupBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS),4));
 
-        CHAMPAGNE_GLASS = BLOCKS.register("champagne_glass",()-> new CupBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).setId(modBlockId("champagne_glass")),4));
+        CHAMPAGNE_GLASS = BLOCKS.register("champagne_glass",()-> new CupBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS),4));
 
         BAR_TABLE = BLOCKS.register("bar_table",BarTableBlock::new);
 
-        BAR_CHAIR = BLOCKS.register("bar_chair",()-> new BarChairBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).setId(modBlockId("bar_chair"))));
+        BAR_CHAIR = BLOCKS.register("bar_chair",()-> new BarChairBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)));
     }
 
     private static DeferredBlock<Block> wineBlock(String name,int maxPile){
-        return BLOCKS.register(name,()-> new WineBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).setId(modBlockId(name)),maxPile));
+        return BLOCKS.register(name,()-> (maxPile == 2 ? new WineBlock.TwoPile(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)) : new WineBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS), maxPile)));
     }
 
     public static ResourceKey<Block> modBlockId(String name){
-        return ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(SipMomentMod.MODID,name));
+        return ResourceKey.create(Registries.BLOCK,ResourceLocation.fromNamespaceAndPath(SipMomentMod.MODID,name));
     }
 
     public static class Entitys{
         public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, SipMomentMod.MODID);
-        public static final Supplier<BlockEntityType<BeverageDisplayBlockEntity>> BEVERAGE_DISPLAY_BLOCK_ENTITY = REGISTER.register("beverage_display_block", () -> new BlockEntityType<>(BeverageDisplayBlockEntity::new, BEVERAGE_DISPLAY_BLOCK.get()));
+        public static final Supplier<BlockEntityType<BeverageDisplayBlockEntity>> BEVERAGE_DISPLAY_BLOCK_ENTITY = REGISTER.register("beverage_display_block", () -> BlockEntityType.Builder.of(BeverageDisplayBlockEntity::new, BEVERAGE_DISPLAY_BLOCK.get()).build(null));
     }
 }

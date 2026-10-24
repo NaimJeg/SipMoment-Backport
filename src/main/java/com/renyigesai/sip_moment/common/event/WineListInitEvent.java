@@ -1,7 +1,7 @@
 package com.renyigesai.sip_moment.common.event;
 
 import com.renyigesai.sip_moment.common.data.WineListIngredient;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 
@@ -11,17 +11,17 @@ import java.util.Map;
 
 public class WineListInitEvent extends Event {
 
-    private Map<Identifier,WineListIngredient> wineListMap;
+    private Map<ResourceLocation,WineListIngredient> wineListMap;
 
-    public WineListInitEvent(Map<Identifier,WineListIngredient> wineListMap) {
+    public WineListInitEvent(Map<ResourceLocation,WineListIngredient> wineListMap) {
         this.wineListMap = wineListMap;
     }
 
-    public void addWineList(Identifier id,WineListIngredient wineListIngredient){
+    public void addWineList(ResourceLocation id,WineListIngredient wineListIngredient){
         this.wineListMap.put(id,wineListIngredient);
     }
 
-    public void removeWineList(Identifier id){
+    public void removeWineList(ResourceLocation id){
         if (this.wineListMap.get(id) != null){
             this.wineListMap.remove(id);
         }
@@ -31,7 +31,7 @@ public class WineListInitEvent extends Event {
         this.wineListMap.clear();
     }
 
-    public WineListIngredient getWineListIngredient(Identifier id){
+    public WineListIngredient getWineListIngredient(ResourceLocation id){
         return wineListMap.get(id);
     }
 
@@ -39,7 +39,7 @@ public class WineListInitEvent extends Event {
         return wineListMap.values().stream().toList();
     }
 
-    public Map<Identifier, WineListIngredient> getWineListMap() {
+    public Map<ResourceLocation, WineListIngredient> getWineListMap() {
         return wineListMap;
     }
 }

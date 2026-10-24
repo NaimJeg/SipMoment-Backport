@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -31,21 +32,16 @@ public abstract class AbstractPileBlock extends Block {
 
     public abstract int getMaxPile();
 
-//    @Override
-//    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-//        if (level.isClientSide()){
-//            return InteractionResult.SUCCESS;
-//        }
-//        if (!player.isShiftKeyDown() && player){
-//            return take(state, level, pos, player);
-//        }
-//        return super.useWithoutItem(state, level, pos, player, hitResult);
-//    }
-
     @Override
-    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (player.isShiftKeyDown()) return InteractionResult.PASS;
+        if (!level.isClientSide()) take(state, level, pos, player);
+        return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide()){
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         if (!player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()){
             return take(state, level, pos, player);
@@ -53,7 +49,7 @@ public abstract class AbstractPileBlock extends Block {
         return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
     }
 
-    public InteractionResult take(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer){
+    public ItemInteractionResult take(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer){
         int i =  pState.getValue(getPileProperty());
         if (i == 1){
             pLevel.removeBlock(pPos,false);
@@ -62,7 +58,7 @@ public abstract class AbstractPileBlock extends Block {
         }
         ItemUtils.givePlayerItem(pPlayer,new ItemStack(this.asItem()));
         pLevel.playSound(null,pPos,getTakeSound(), SoundSource.BLOCKS);
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     protected BlockState rotate(BlockState state, Rotation rot) {

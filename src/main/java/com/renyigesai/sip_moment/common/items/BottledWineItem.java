@@ -15,7 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.TooltipDisplay;
+
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -72,8 +72,8 @@ public class BottledWineItem extends PileItem{
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack pStack) {
-        return ItemUseAnimation.DRINK;
+    public UseAnim getUseAnimation(ItemStack pStack) {
+        return UseAnim.DRINK;
     }
 
     public static boolean isRepeatEat(ItemStack stack){
@@ -95,7 +95,7 @@ public class BottledWineItem extends PileItem{
             }else {
                 stack.set(SMDataComponents.EAT_COUNT,eatCount - 1);
             }
-            return (eatCount - 1 == 0 && cache.getCraftingRemainder() != null) ? cache.getCraftingRemainder().create() : stack;
+            return (eatCount - 1 == 0 && !cache.getCraftingRemainingItem().isEmpty()) ? cache.getCraftingRemainingItem() : stack;
         }
         return stack;
     }
@@ -135,16 +135,16 @@ public class BottledWineItem extends PileItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, display, builder, tooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> builder, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, builder, tooltipFlag);
         if (isRepeatEat(stack)) {
             int eatCount = stack.getOrDefault(SMDataComponents.EAT_COUNT, -1);
             int eatCountMax = stack.getOrDefault(SMDataComponents.EAT_COUNT_MAX, -1);
             String translatable = "tooltips.sip_moment.repeat_eat_item_drink";
-            builder.accept(Component.literal(Component.translatable(translatable).getString() + eatCount + " / " + eatCountMax));
+            builder.add(Component.literal(Component.translatable(translatable).getString() + eatCount + " / " + eatCountMax));
         }
 
-        builder.accept(Component.empty());
-        builder.accept(Component.translatable("tooltip." + this.toString()).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+        builder.add(Component.empty());
+        builder.add(Component.translatable("tooltip." + this.toString()).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
     }
 }

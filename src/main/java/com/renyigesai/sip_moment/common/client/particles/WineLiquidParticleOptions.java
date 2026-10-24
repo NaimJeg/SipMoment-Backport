@@ -8,7 +8,7 @@ import net.minecraft.core.particles.ScalableParticleOptionsBase;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ARGB;
+
 import net.minecraft.util.ExtraCodecs;
 import org.joml.Vector3f;
 
@@ -16,7 +16,7 @@ public class WineLiquidParticleOptions extends ScalableParticleOptionsBase {
 
     public static final MapCodec<WineLiquidParticleOptions> CODEC = RecordCodecBuilder.mapCodec(
             i -> i.group(
-                            ExtraCodecs.RGB_COLOR_CODEC.fieldOf("color").forGetter(o -> o.color), SCALE.fieldOf("scale").forGetter(ScalableParticleOptionsBase::getScale)
+                            com.mojang.serialization.Codec.intRange(0, 0xFFFFFF).fieldOf("color").forGetter(o -> o.color), SCALE.fieldOf("scale").forGetter(ScalableParticleOptionsBase::getScale)
                     )
                     .apply(i, WineLiquidParticleOptions::new)
     );
@@ -31,7 +31,7 @@ public class WineLiquidParticleOptions extends ScalableParticleOptionsBase {
     }
 
     public Vector3f getColor() {
-        return ARGB.vector3fFromRGB24(this.color);
+        return new Vector3f(((color >> 16) & 255) / 255F, ((color >> 8) & 255) / 255F, (color & 255) / 255F);
     }
 
     @Override

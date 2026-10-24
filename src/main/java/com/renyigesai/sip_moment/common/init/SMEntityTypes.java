@@ -8,11 +8,11 @@ import com.renyigesai.sip_moment.common.entitys.PouringWineEntity;
 import com.renyigesai.sip_moment.common.entitys.ThrownSpearLonginus;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,16 +23,16 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 @SuppressWarnings("removal")
-@EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class SMEntityTypes {
     public static final DeferredRegister<EntityType<?>> ENTITY =
             DeferredRegister.create(Registries.ENTITY_TYPE, SipMomentMod.MODID);
 
     public static final Supplier<EntityType<PouringWineEntity>> POURING_WINE = ENTITY.register("pouring_wine", () ->
-            EntityType.Builder.of(PouringWineEntity::new, MobCategory.MISC).sized(0.05f, 0.05f).build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(SipMomentMod.MODID,"pouring_wine"))));
+            EntityType.Builder.of(PouringWineEntity::new, MobCategory.MISC).sized(0.05f, 0.05f).build("sip_moment:pouring_wine"));
 
     public static final Supplier<EntityType<BarChairEntity>> BAR_CHAIR = ENTITY.register("bar_chair", () ->
-            EntityType.Builder.of(BarChairEntity::new, MobCategory.MISC).sized(0.05f, 0.05f).build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(SipMomentMod.MODID,"bar_chair"))));
+            EntityType.Builder.of(BarChairEntity::new, MobCategory.MISC).sized(0.05f, 0.05f).build("sip_moment:bar_chair"));
 
     public static final Supplier<EntityType<ThrownSpearLonginus>> SPEAR_LONGINUS = ENTITY.register(
             "spear_longinus",
@@ -40,12 +40,12 @@ public class SMEntityTypes {
                             (EntityType<ThrownSpearLonginus> type, Level level) -> new ThrownSpearLonginus(type, level),
                             MobCategory.MISC
                     )
-                    .noLootTable()
+
                     .sized(0.5F, 0.5F)
                     .eyeHeight(0.13F)
                     .clientTrackingRange(4)
                     .updateInterval(20)
-                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(SipMomentMod.MODID, "spear_longinus")))
+                    .build("sip_moment:spear_longinus")
     );
 
     @SubscribeEvent

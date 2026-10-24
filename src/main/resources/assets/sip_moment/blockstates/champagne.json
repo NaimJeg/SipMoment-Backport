@@ -22,14 +22,6 @@
       "model": "sip_moment:block/champagne_2",
       "y": 180
     },
-    "facing=south,pile=3": {
-      "model": "sip_moment:block/champagne_3",
-      "y": 180
-    },
-    "facing=south,pile=4": {
-      "model": "sip_moment:block/champagne_4",
-      "y": 180
-    },
     "facing=west,pile=1": {
       "model": "sip_moment:block/champagne_1",
       "y": 270

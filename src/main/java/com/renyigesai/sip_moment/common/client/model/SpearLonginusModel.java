@@ -8,17 +8,24 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 
-public class SpearLonginusModel<T extends Entity> extends Model<Unit> {
+public class SpearLonginusModel<T extends Entity> extends Model {
+    private final ModelPart root;
+
+    @Override
+    public void renderToBuffer(com.mojang.blaze3d.vertex.PoseStack poses, com.mojang.blaze3d.vertex.VertexConsumer vertices, int light, int overlay, int color) {
+        root.render(poses, vertices, light, overlay, color);
+    }
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath("sip_moment", "textures/entity/spear_longinus.png"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("sip_moment", "textures/entity/spear_longinus.png"), "main");
 
 	public SpearLonginusModel(ModelPart root) {
-		super(root, RenderTypes::entitySolid);
+		super(RenderType::entitySolid);
+        this.root = root;
 	}
 
 	public static LayerDefinition createBodyLayer() {

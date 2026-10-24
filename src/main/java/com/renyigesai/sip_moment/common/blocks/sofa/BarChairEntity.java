@@ -3,7 +3,7 @@ package com.renyigesai.sip_moment.common.blocks.sofa;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -13,8 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -60,17 +60,17 @@ public class BarChairEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+    public boolean hurt(DamageSource damageSource, float v) {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput valueInput) {
+    protected void readAdditionalSaveData(CompoundTag valueInput) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+    protected void addAdditionalSaveData(CompoundTag valueOutput) {
 
     }
 
@@ -101,7 +101,7 @@ public class BarChairEntity extends Entity implements IEntityWithComplexSpawn {
 
     }
 
-    public static class BarChairEntityRender extends EntityRenderer<BarChairEntity,SofaRenderState> {
+    public static class BarChairEntityRender extends EntityRenderer<BarChairEntity> {
 
         public BarChairEntityRender(EntityRendererProvider.Context context) {
             super(context);
@@ -113,12 +113,8 @@ public class BarChairEntity extends Entity implements IEntityWithComplexSpawn {
         }
 
         @Override
-        public SofaRenderState createRenderState() {
-            return new SofaRenderState();
+        public net.minecraft.resources.ResourceLocation getTextureLocation(BarChairEntity entity) {
+            return net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS;
         }
-    }
-
-    public static class SofaRenderState extends EntityRenderState{
-
     }
 }

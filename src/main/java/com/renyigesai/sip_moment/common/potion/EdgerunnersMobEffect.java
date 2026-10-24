@@ -24,7 +24,7 @@ public class EdgerunnersMobEffect extends MobEffect {
             Entity attacker = event.getEntity();
             Entity entity = event.getTarget();
             if (attacker instanceof LivingEntity livingEntity && livingEntity.hasEffect(SMMobEffects.EDGERUNNERS)){
-                RandomSource random = entity.getRandom();
+                RandomSource random = livingEntity.getRandom();
                 if (random.nextDouble() < 0.1){
                     if (livingEntity.hasEffect(SMMobEffects.FURIOUS)){
                         int level = livingEntity.getEffect(SMMobEffects.FURIOUS).getAmplifier();

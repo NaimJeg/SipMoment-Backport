@@ -12,21 +12,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ListBackedContainer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.slf4j.Logger;
 @SuppressWarnings("removal")
-public class BeverageDisplayBlockEntity extends BlockEntity implements ListBackedContainer, ItemOwner {
+public class BeverageDisplayBlockEntity extends BlockEntity {
 
 
     private ItemStackHandler inventory;
@@ -51,7 +48,6 @@ public class BeverageDisplayBlockEntity extends BlockEntity implements ListBacke
         return inventory;
     }
 
-    @Override
     public NonNullList<ItemStack> getItems() {
         return com.renyigesai.sip_moment.common.utils.ItemUtils.toNonNullList(this.inventory);
     }
@@ -65,30 +61,14 @@ public class BeverageDisplayBlockEntity extends BlockEntity implements ListBacke
         return true;
     }
 
-    @Override
     public boolean stillValid(Player player) {
         return false;
     }
 
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER);
-
-        CompoundTag var4;
-        try {
-            TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
-            ContainerHelper.saveAllItems(output, ItemUtils.toNonNullList(this.inventory), true);
-            var4 = output.buildResult();
-        } catch (Throwable var7) {
-            try {
-                reporter.close();
-            } catch (Throwable var6) {
-                var7.addSuppressed(var6);
-            }
-
-            throw var7;
-        }
-        reporter.close();
-        return var4;
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, registries);
+        return tag;
     }
 
 
@@ -98,15 +78,16 @@ public class BeverageDisplayBlockEntity extends BlockEntity implements ListBacke
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        this.inventory = new ItemStackHandler(11);
-        WorldUtils.loadItemsToHandler(input,this.inventory,"Items");
+    protected void loadAdditional(CompoundTag input, HolderLookup.Provider registries) {
+        super.loadAdditional(input, registries);
+        this.inventory = new ItemStackHandler(4);
+        WorldUtils.loadItemsToHandler(input,this.inventory,"Items", registries);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        WorldUtils.saveAllItems(output, ItemUtils.toNonNullList(this.inventory),"Items");
+    protected void saveAdditional(CompoundTag output, HolderLookup.Provider registries) {
+        super.saveAdditional(output, registries);
+        WorldUtils.saveAllItems(output, ItemUtils.toNonNullList(this.inventory),"Items", registries);
     }
 
     public boolean addItem(ItemStack stack){

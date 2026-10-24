@@ -16,7 +16,7 @@ public class SMCreativeModeTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.sip_moment.main_tab"))
                     .icon(() -> SMItems.WHISKY.get().getDefaultInstance())
-                    .displayItems((_, output) -> {
+                    .displayItems((parameters, output) -> {
                         output.accept(SMItems.HIGHBALL);
                         output.accept(SMItems.BUTTER_BEER);
                         output.accept(SMItems.WHISKY);

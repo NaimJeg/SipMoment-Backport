@@ -3,7 +3,8 @@
 		"0": "sip_moment:block/whisky",
 		"particle": "sip_moment:block/whisky"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [11, 1, 11],
 			"to": [13, 3, 13],

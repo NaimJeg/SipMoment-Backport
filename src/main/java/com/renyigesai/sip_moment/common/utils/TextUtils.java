@@ -14,10 +14,10 @@ import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.Consumable;
+
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
-import net.minecraft.world.item.consume_effects.ConsumeEffect;
+
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,16 +31,13 @@ public class TextUtils {
 
     //By Farmersdelight
     public static void addFoodEffectTooltip(ItemStack stack, Consumer<Component> tooltipAdder, float durationFactor, float tickRate) {
-        if (!stack.has(DataComponents.CONSUMABLE)){
+        if (!stack.has(DataComponents.FOOD)){
             return;
         }
-        Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+        net.minecraft.world.food.FoodProperties consumable = stack.get(DataComponents.FOOD);
         if (consumable != null) {
             List<MobEffectInstance> effectList = new java.util.ArrayList<>(List.of());
-            consumable.onConsumeEffects().forEach(consumeEffect -> {
-                List<MobEffectInstance> effects = getConsumeEffect(consumeEffect);
-                effectList.addAll(effects);
-            });
+            consumable.effects().forEach(effect -> effectList.add(effect.effect()));
 
             List<Pair<Holder<Attribute>, AttributeModifier>> attributeList = Lists.newArrayList();
             MutableComponent mutableComponent;
@@ -92,13 +89,6 @@ public class TextUtils {
             }
 
         }
-    }
-
-    private static List<MobEffectInstance> getConsumeEffect(ConsumeEffect consumeEffect){
-        if (consumeEffect instanceof ApplyStatusEffectsConsumeEffect applyStatusEffectsConsumeEffect){
-            return applyStatusEffectsConsumeEffect.effects();
-        }
-        return List.of();
     }
 
 }

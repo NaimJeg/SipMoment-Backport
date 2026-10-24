@@ -4,7 +4,7 @@ import com.renyigesai.sip_moment.common.data.WineListCatalog;
 import com.renyigesai.sip_moment.common.data.WineListIngredient;
 import com.renyigesai.sip_moment.common.init.SMAttachments;
 import com.renyigesai.sip_moment.common.init.SMMenuType;
-import net.minecraft.client.renderer.RenderPipelines;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -82,7 +82,7 @@ public class WineListMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int slotIndex) {
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override

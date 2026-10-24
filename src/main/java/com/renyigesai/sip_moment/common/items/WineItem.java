@@ -14,9 +14,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
+
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -31,12 +31,12 @@ public class WineItem extends DrinkItem{
     }
 
     public void eat(Level level,LivingEntity living,ItemStack stack){
-        if (!living.hasData(SMAttachments.CAPACITY_FOR_LIQUOR)){
+        if (!level.isClientSide() && living.getData(SMAttachments.CAPACITY_FOR_LIQUOR) < 0){
             int random = new Random().nextInt(0, 9);
             living.setData(SMAttachments.CAPACITY_FOR_LIQUOR,random);
             if (living instanceof Player player){
                 MutableComponent mutableComponent = Component.literal(String.valueOf(random + 1)).withStyle(ChatFormatting.GOLD);
-                player.sendOverlayMessage(Component.translatable("tooltip.sip_moment.player_capacity_for_liquor").append(mutableComponent));
+                player.displayClientMessage(Component.translatable("tooltip.sip_moment.player_capacity_for_liquor").append(mutableComponent), true);
             }
         }
         if (!level.isClientSide()) {

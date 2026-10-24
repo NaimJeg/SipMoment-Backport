@@ -3,7 +3,8 @@
 		"0": "sip_moment:block/bar_chair",
 		"particle": "sip_moment:block/bar_chair"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [6, 0, 6],
 			"to": [7, 12, 7],

@@ -45,7 +45,20 @@ public class WineBlock extends AbstractPileBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING,PILE);
+        builder.add(FACING, getPileProperty());
+    }
+
+    public static class TwoPile extends WineBlock {
+        private static final IntegerProperty TWO_PILE = IntegerProperty.create("pile", 1, 2);
+
+        public TwoPile(Properties properties) {
+            super(properties, 2);
+        }
+
+        @Override
+        public Property<Integer> getPileProperty() {
+            return TWO_PILE;
+        }
     }
 
     static {

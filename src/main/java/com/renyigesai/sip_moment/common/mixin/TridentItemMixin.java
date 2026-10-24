@@ -13,8 +13,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TridentItem.class)
 public class TridentItemMixin extends Item {
@@ -35,11 +35,11 @@ public class TridentItemMixin extends Item {
         super(properties);
     }
 
-    @Unique
     @Inject(method = "releaseUsing",at = @At("HEAD"), cancellable = true)
-    public void releaseUsing(ItemStack itemStack, Level level, LivingEntity entity, int remainingTime, CallbackInfoReturnable<Boolean> cir) {
+    public void releaseUsing(ItemStack itemStack, Level level, LivingEntity entity, int remainingTime, CallbackInfo cir) {
         if (entity.hasEffect(SMMobEffects.SINCERELY_FOR_YOU)){
-            cir.setReturnValue(SMReleaseSpearLonginus(itemStack, level, entity, remainingTime));
+            SMReleaseSpearLonginus(itemStack, level, entity, remainingTime);
+            cir.cancel();
         }
 
     }
@@ -52,19 +52,19 @@ public class TridentItemMixin extends Item {
             } else {
                 float riptideStrength = EnchantmentHelper.getTridentSpinAttackStrength(itemStack, player);
                 if (!(riptideStrength > 0.0F) || player.isInWaterOrRain() && !player.isPassenger()) {
-                    if (itemStack.nextDamageWillBreak()) {
+                    if (itemStack.getDamageValue() >= itemStack.getMaxDamage() - 1) {
                         return false;
                     } else {
                         Holder<SoundEvent> sound = EnchantmentHelper.pickHighestLevel(itemStack, EnchantmentEffectComponents.TRIDENT_SOUND)
                                 .orElse(SoundEvents.TRIDENT_THROW);
                         player.awardStat(Stats.ITEM_USED.get(this));
                         if (level instanceof ServerLevel serverLevel) {
-                            itemStack.hurtWithoutBreaking(1, player);
+                            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
                             if (riptideStrength == 0.0F) {
                                 ItemStack thrownItemStack = itemStack.consumeAndReturn(1, player);
-                                ThrownSpearLonginus trident = Projectile.spawnProjectileFromRotation(
-                                        ThrownSpearLonginus::new, serverLevel, thrownItemStack, player, 0.0F, 5.0F, 1.0F
-                                );
+                                ThrownSpearLonginus trident = new ThrownSpearLonginus(level, player, thrownItemStack);
+                                trident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 5.0F, 1.0F);
+                                serverLevel.addFreshEntity(trident);
                                 if (player.hasInfiniteMaterials()) {
                                     trident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                                 }

@@ -5,7 +5,8 @@
 		"0": "sip_moment:block/whisky",
 		"particle": "sip_moment:block/whisky"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [7, 1, 7],
 			"to": [9, 3, 9],

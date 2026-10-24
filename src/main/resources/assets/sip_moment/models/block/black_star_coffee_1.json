@@ -5,7 +5,8 @@
 		"0": "sip_moment:block/black_star_coffee",
 		"particle": "sip_moment:block/black_star_coffee"
 	},
-	"elements": [
+	"loader": "sip_moment:rotated_elements",
+	"sip_elements": [
 		{
 			"from": [10, 1.25, 6],
 			"to": [10, 4.25, 10],
