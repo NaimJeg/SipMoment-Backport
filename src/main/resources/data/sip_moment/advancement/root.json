@@ -4,6 +4,7 @@
       "count": 1,
       "id": "sip_moment:whisky"
     },
+    "background": "minecraft:block/spruce_planks",
     "title": {
       "translate": "advancements.sip_moment.root.title"
     },

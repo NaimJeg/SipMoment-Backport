@@ -20,6 +20,7 @@ public class SMSounds {
     }
 
     public static final DeferredHolder<SoundEvent,SoundEvent> POURING_WINE = registerSoundEvents("pouring_wine");
+    public static final DeferredHolder<SoundEvent,SoundEvent> EDGERUNNERS = registerSoundEvents("edgerunners");
 
     public static final DeferredHolder<SoundEvent,SoundEvent> MUSIC_DISC_DUST_TO_DUST = registerSoundEvents("music_disc_dust_to_dust");
 

@@ -30,19 +30,6 @@ public class SipMomentMod {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
-//        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
     }
-
-//    @SubscribeEvent
-//    public void onServerStarting(ServerStartingEvent event) {
-//        // Do something when the server starts
-//        LOGGER.info("HELLO from server starting");
-//        List<WineListIngredient> wineListIngredients = new ArrayList<>();
-//        wineListIngredients.add(new WineListIngredient(WineListIngredient.toArr(new ItemStack(Items.EMERALD)),WineListIngredient.toArr(new ItemStack(SMItems.KYOHO_WINE.get()))));
-//        WineListInitEvent wineListInitEvent = new WineListInitEvent(wineListIngredients);
-//        NeoForge.EVENT_BUS.post(wineListInitEvent);
-//        WineListCatalog.wineList.addAll(wineListIngredients);
-//    }
 }

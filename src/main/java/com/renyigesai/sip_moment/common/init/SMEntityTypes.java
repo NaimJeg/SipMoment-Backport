@@ -3,16 +3,15 @@ package com.renyigesai.sip_moment.common.init;
 
 import com.renyigesai.sip_moment.SipMomentMod;
 import com.renyigesai.sip_moment.common.blocks.sofa.BarChairEntity;
+import com.renyigesai.sip_moment.common.client.renderer.entity.AfterimageRender;
 import com.renyigesai.sip_moment.common.client.renderer.entity.SpearLonginusRender;
+import com.renyigesai.sip_moment.common.entitys.AfterimageEntity;
 import com.renyigesai.sip_moment.common.entitys.PouringWineEntity;
 import com.renyigesai.sip_moment.common.entitys.ThrownSpearLonginus;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,8 +21,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-@SuppressWarnings("removal")
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class SMEntityTypes {
     public static final DeferredRegister<EntityType<?>> ENTITY =
             DeferredRegister.create(Registries.ENTITY_TYPE, SipMomentMod.MODID);
@@ -48,11 +45,21 @@ public class SMEntityTypes {
                     .build("sip_moment:spear_longinus")
     );
 
-    @SubscribeEvent
-    public static void init(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> EntityRenderers.register(POURING_WINE.get(), PouringWineEntity.PouringWineRender::new));
-        event.enqueueWork(() -> EntityRenderers.register(BAR_CHAIR.get(), BarChairEntity.BarChairEntityRender::new));
-        event.enqueueWork(() -> EntityRenderers.register(SPEAR_LONGINUS.get(), SpearLonginusRender::new));
+    public static final Supplier<EntityType<AfterimageEntity>> AFTERIMAGE = ENTITY.register("afterimage", () ->
+            EntityType.Builder.of(AfterimageEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .eyeHeight(1.74F)
+                    .noSave().fireImmune().build("sip_moment:afterimage"));
+
+    @EventBusSubscriber(modid = SipMomentMod.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void init(FMLCommonSetupEvent event) {
+            event.enqueueWork(() -> EntityRenderers.register(POURING_WINE.get(), PouringWineEntity.PouringWineRender::new));
+            event.enqueueWork(() -> EntityRenderers.register(BAR_CHAIR.get(), BarChairEntity.BarChairEntityRender::new));
+            event.enqueueWork(() -> EntityRenderers.register(SPEAR_LONGINUS.get(), SpearLonginusRender::new));
+            event.enqueueWork(() -> EntityRenderers.register(AFTERIMAGE.get(), AfterimageRender::new));
+        }
     }
 
 }

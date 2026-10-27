@@ -3,7 +3,15 @@
   "package": "com.renyigesai.sip_moment.common.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EntityMixin",
+    "PlayerMixin",
+    "ServerEntityMixin",
+    "ServerLevelMixin",
     "TridentItemMixin"
+  ],
+  "client": [
+    "ClientPacketListenerMixin",
+    "EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

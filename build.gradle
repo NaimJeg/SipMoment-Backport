@@ -8,16 +8,26 @@ version = mod_version
 group = mod_group_id
 base { archivesName = mod_id }
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
     exclude '**/*.bbmodel', '**/.cache/**'
 }
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo sourceSets.gameTest
     runs {
         client { client() }
         server { server(); programArgument '--nogui' }
-        gameTestServer { type = 'gameTestServer' }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gameTest
+        }
         data {
             data()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources').absolutePath, '--existing', file('src/main/resources').absolutePath
@@ -30,7 +40,10 @@ neoForge {
         }
     }
     mods {
-        "${mod_id}" { sourceSet sourceSets.main }
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gameTest
+        }
     }
 }
 configurations { runtimeClasspath.extendsFrom localRuntime }

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,pile=1": {
+      "model": "sip_moment:block/shipwreck_vintage_1",
+      "y": 90
+    },
+    "facing=east,pile=2": {
+      "model": "sip_moment:block/shipwreck_vintage_2",
+      "y": 90
+    },
+    "facing=north,pile=1": {
+      "model": "sip_moment:block/shipwreck_vintage_1"
+    },
+    "facing=north,pile=2": {
+      "model": "sip_moment:block/shipwreck_vintage_2"
+    },
+    "facing=south,pile=1": {
+      "model": "sip_moment:block/shipwreck_vintage_1",
+      "y": 180
+    },
+    "facing=south,pile=2": {
+      "model": "sip_moment:block/shipwreck_vintage_2",
+      "y": 180
+    },
+    "facing=west,pile=1": {
+      "model": "sip_moment:block/shipwreck_vintage_1",
+      "y": 270
+    },
+    "facing=west,pile=2": {
+      "model": "sip_moment:block/shipwreck_vintage_2",
+      "y": 270
+    }
+  }
+}

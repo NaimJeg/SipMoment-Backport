@@ -35,12 +35,6 @@ public class ItemUtils {
         return list;
     }
 
-//    public static void shrinkAndReturn(ItemStack stack,int count,Player player){
-//        shrink(stack,count,player);
-//        if (stack.getItem().c){
-//            givePlayerItem(player,new ItemStack(stack.getItem(),count));
-//        }
-//    }
 
     //By Farmer's Delight
     public static void spawnItemEntity(Level level, ItemStack stack, double x, double y, double z, Vec3 pDeltaMovement) {
@@ -54,16 +48,4 @@ public class ItemUtils {
         entity.setDeltaMovement(new Vec3(0.0,0.0,0.0));
         level.addFreshEntity(entity);
     }
-
-//    public static boolean isTag(ItemStack stack, Item item){
-//        List<TagKey<Item>> tags = BuiltInRegistries.ITEM.getHolderOrThrow(BuiltInRegistries.ITEM.getResourceKey(item).get()).tags().toList();
-//        boolean flag = false;
-//        for (int i = 0; i < tags.size(); i++) {
-//            if (stack.is(tags.get(i))){
-//                flag = true;
-//                break;
-//            }
-//        }
-//        return flag;
-//    }
 }

@@ -96,7 +96,6 @@ public class PileItem extends BlockItem {
             InteractionResult placeResult = this.place(placeContext);
             if (placeResult.consumesAction()) {
                 player.awardStat(Stats.ITEM_USED.get(this));
-                level.playSound(null, pos, getPlaceSound(), SoundSource.PLAYERS, 0.8F, 0.8F);
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.PASS;

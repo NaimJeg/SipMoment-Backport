@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "sip_moment:shipwreck_vintage"
+    },
+    "title": {
+      "translate": "advancements.sip_moment.get_shipwreck_vintage.title"
+    },
+    "description": {
+      "translate": "advancements.sip_moment.get_shipwreck_vintage.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "sieving": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "sip_moment:shipwreck_vintage"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "parent": "sip_moment:root"
+}
