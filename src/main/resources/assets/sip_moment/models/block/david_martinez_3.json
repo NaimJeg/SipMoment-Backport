@@ -1,4 +1,5 @@
 {
+	"render_type": "minecraft:cutout",
 	"textures": {
 		"0": "sip_moment:block/david_martinez",
 		"particle": "sip_moment:block/david_martinez"

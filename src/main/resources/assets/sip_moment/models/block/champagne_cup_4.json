@@ -1,4 +1,5 @@
 {
+	"render_type": "minecraft:cutout",
 	"textures": {
 		"0": "sip_moment:block/champagne_cup",
 		"particle": "sip_moment:block/champagne_cup"
