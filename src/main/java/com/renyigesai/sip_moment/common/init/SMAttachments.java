@@ -25,4 +25,12 @@ public class SMAttachments {
                     .sync(ByteBufCodecs.VAR_INT)
                     .build()
     );
+
+    public static final Supplier<AttachmentType<Float>> SLOW_RATE =
+            ATTACHMENT_TYPES.register("slow_rate", () ->
+                    AttachmentType.builder(() -> 1.0f)
+                            .sync(ByteBufCodecs.FLOAT) // 启用同步
+                            .build()
+            );
+
 }

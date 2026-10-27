@@ -34,6 +34,7 @@ public class SMBlocks {
     public static final DeferredBlock<Block> CHAMPAGNE;
     public static final DeferredBlock<Block> CHAMPAGNE_CUP;
     public static final DeferredBlock<Block> ORANGE_JUICE;
+    public static final DeferredBlock<Block> SHIPWRECK_VINTAGE;
     public static final DeferredBlock<Block> GOBLET;
     public static final DeferredBlock<Block> CHAMPAGNE_GLASS;
     public static final DeferredBlock<Block> BAR_TABLE;
@@ -61,6 +62,8 @@ public class SMBlocks {
         CHAMPAGNE_CUP = wineBlock("champagne_cup",4);
 
         ORANGE_JUICE = wineBlock("orange_juice",2);
+
+        SHIPWRECK_VINTAGE = wineBlock("shipwreck_vintage",2);
 
         GOBLET = BLOCKS.register("goblet",()-> new CupBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).setId(modBlockId("goblet")),4));
 

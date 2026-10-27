@@ -22,6 +22,7 @@ public class SMCreativeModeTabs {
                         output.accept(SMItems.WHISKY);
                         output.accept(SMItems.DAVID_MARTINEZ);
                         output.accept(SMItems.KYOHO_WINE_CUP);
+                        output.accept(SMItems.SHIPWRECK_VINTAGE);
                         output.accept(SMItems.CHAMPAGNE_CUP);
                         output.accept(SMItems.BLACK_STAR_COFFEE);
                         output.accept(SMItems.ORANGE_JUICE);

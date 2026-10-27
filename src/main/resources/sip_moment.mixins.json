@@ -4,6 +4,10 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "ConsumableMixin",
+    "EntityMixin",
+    "PlayerMixin",
+    "ServerEntityMixin",
+    "ServerLevelMixin",
     "TridentItemMixin"
   ],
   "injectors": {
@@ -11,5 +15,9 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "EntityRenderDispatcherMixin",
+    "EntityRenderStateMixin"
+  ]
 }

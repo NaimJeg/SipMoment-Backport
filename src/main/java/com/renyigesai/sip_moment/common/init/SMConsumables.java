@@ -13,6 +13,7 @@ public class SMConsumables {
     public static final Consumable DAVID_MARTINEZ;
     public static final Consumable BUTTER_BEER;
     public static final Consumable ORANGE_JUICE;
+    public static final Consumable SHIPWRECK_VINTAGE;
 
     static {
 
@@ -32,6 +33,12 @@ public class SMConsumables {
                 .build();
 
         ORANGE_JUICE = defaultEffectFood(new MobEffectInstance(SMMobEffects.SINCERELY_FOR_YOU,1200))
+                .animation(ItemUseAnimation.DRINK).sound(SoundEvents.GENERIC_DRINK)
+                .hasConsumeParticles(false)
+                .build();
+
+        SHIPWRECK_VINTAGE = defaultEffectFood(
+                new MobEffectInstance(MobEffects.NAUSEA,600)).onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.WITHER,600)))
                 .animation(ItemUseAnimation.DRINK).sound(SoundEvents.GENERIC_DRINK)
                 .hasConsumeParticles(false)
                 .build();

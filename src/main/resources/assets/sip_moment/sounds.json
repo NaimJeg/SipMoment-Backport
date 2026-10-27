@@ -5,6 +5,12 @@
       "sip_moment:pouring_wine"
     ]
   },
+  "edgerunners": {
+    "subtitle":"block.generic.edgerunners",
+    "sounds": [
+      "sip_moment:edgerunners"
+    ]
+  },
   "music_disc_dust_to_dust": {
     "sounds": [
       {

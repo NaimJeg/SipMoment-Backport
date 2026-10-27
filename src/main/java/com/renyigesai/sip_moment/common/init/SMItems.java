@@ -30,6 +30,7 @@ public class SMItems {
     public static final DeferredItem<Item> CHAMPAGNE;
     public static final DeferredItem<Item> CHAMPAGNE_CUP;
     public static final DeferredItem<Item> ORANGE_JUICE ;
+    public static final DeferredItem<Item> SHIPWRECK_VINTAGE ;
     public static final DeferredItem<Item> GOBLET;
     public static final DeferredItem<Item> CHAMPAGNE_GLASS;
     public static final DeferredItem<Item> BAR_TABLE;
@@ -45,10 +46,11 @@ public class SMItems {
         BUTTER_BEER = drinkItem(SMBlocks.BUTTER_BEER,6,SMConsumables.BUTTER_BEER,true);
         BLACK_STAR_COFFEE = drinkItem(SMBlocks.BLACK_STAR_COFFEE,4,true);
         WHISKY = wineItem(SMBlocks.WHISKY,4,false);
-        DAVID_MARTINEZ = wineItem(SMBlocks.DAVID_MARTINEZ,4,SMConsumables.DAVID_MARTINEZ,true);
+        DAVID_MARTINEZ = ITEMS.register("david_martinez",()-> new DavidMartinezItem(SMBlocks.DAVID_MARTINEZ.get(),new Item.Properties().food(COMMON_WINE_FOOD,SMConsumables.DAVID_MARTINEZ).stacksTo(1).setId(modItemId("david_martinez")).useBlockDescriptionPrefix(),4,true));
         CHAMPAGNE = ITEMS.register("champagne",()-> new BottledWineItem(SMBlocks.CHAMPAGNE.get(),new Item.Properties().setId(modItemId("champagne")).useBlockDescriptionPrefix(),SMItems.CHAMPAGNE_GLASS,SMItems.CHAMPAGNE_CUP,6,16755200,0.0f));
         CHAMPAGNE_CUP = wineItem(SMBlocks.CHAMPAGNE_CUP,4,false);
-        ORANGE_JUICE = drinkItem(SMBlocks.ORANGE_JUICE,4,SMConsumables.ORANGE_JUICE,true);
+        ORANGE_JUICE = ITEMS.register("orange_juice",()-> new OrangeJuiceItem(SMBlocks.ORANGE_JUICE.get(),new Item.Properties().food(COMMON_WINE_FOOD,SMConsumables.ORANGE_JUICE).setId(modItemId("orange_juice")).useBlockDescriptionPrefix(),4,false,false));
+        SHIPWRECK_VINTAGE = wineItem(SMBlocks.SHIPWRECK_VINTAGE,2,SMConsumables.SHIPWRECK_VINTAGE,true);
         GOBLET = ITEMS.register("goblet",()-> new PileItem(SMBlocks.GOBLET.get(),new Item.Properties().setId(modItemId("goblet")).useBlockDescriptionPrefix()));
         CHAMPAGNE_GLASS = ITEMS.register("champagne_glass",()-> new PileItem(SMBlocks.CHAMPAGNE_GLASS.get(),new Item.Properties().setId(modItemId("champagne_glass")).useBlockDescriptionPrefix()));
         BAR_TABLE = block(SMBlocks.BAR_TABLE);
